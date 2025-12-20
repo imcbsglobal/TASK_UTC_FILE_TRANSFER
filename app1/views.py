@@ -1,8 +1,10 @@
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from .models import TransferData
 import requests
+from django.db.models import Q
 
 CORPORATE_API_URL = "https://activate.imcbs.com/corporate-clientid/list/"
 
@@ -30,7 +32,17 @@ def transfer_api(request):
 
     # ===================== GET API =====================
     if request.method == 'GET':
-        records = TransferData.objects.all().order_by('-created_at')
+
+        client_id = request.GET.get("client_id")
+
+        if client_id:
+            # ✅ ONLY TO CLIENT DATA
+            records = TransferData.objects.filter(
+                to_client_id=client_id
+            ).order_by('-created_at')
+        else:
+            records = TransferData.objects.all().order_by('-created_at')
+
         response_data = []
 
         for item in records:
@@ -40,11 +52,8 @@ def transfer_api(request):
                 "to_corporate_id": item.to_corporate_id,
                 "to_client_id": item.to_client_id,
                 "type": item.transfer_type,
-
-                # ✅ Cloudflare public URLs
                 "data_1": item.data_1,
                 "data_2": item.data_2,
-
                 "date_of_upload": item.created_at.strftime("%Y-%m-%d"),
                 "time_of_upload": item.created_at.strftime("%H:%M:%S"),
                 "status": "uploaded"
@@ -55,6 +64,7 @@ def transfer_api(request):
             "count": len(response_data),
             "data": response_data
         })
+
 
 
     # ===================== POST API =====================
@@ -152,3 +162,7 @@ def transfer_api(request):
         "success": False,
         "message": "Method not allowed"
     }, status=405)
+
+
+def transfer_page(request):
+    return render(request, "transfer_view.html")

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Data Viewer</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.3), transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        h1 {
+            color: #1e293b;
+            font-size: 32px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        h1 span {
+            font-size: 36px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 15px;
+            margin-left: 48px;
+        }
+
+        .search-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-label {
+            display: block;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            align-items: stretch;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 16px 20px;
+            font-size: 15px;
+            border-radius: 12px;
+            border: 2px solid #cbd5e1;
+            outline: none;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: 'Courier New', monospace;
+        }
+
+        .search-box input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .search-box input::placeholder {
+            color: #94a3b8;
+        }
+
+        .search-box button {
+            padding: 16px 40px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .search-box button:active {
+            transform: translateY(0);
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            background: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1100px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            color: #ffffff;
+            padding: 16px 14px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            white-space: nowrap;
+            border-bottom: 3px solid #6366f1;
+        }
+
+        tbody td {
+            padding: 16px 14px;
+            font-size: 14px;
+            border-bottom: 1px solid #f1f5f9;
+            white-space: nowrap;
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        tbody td:first-child {
+            font-weight: 700;
+            color: #64748b;
+        }
+
+        tbody td strong {
+            color: #6366f1;
+            font-weight: 700;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .file-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-link {
+            color: #2563eb;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 6px 10px;
+            background: #dbeafe;
+            border-radius: 8px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 13px;
+            max-width: 350px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .file-link:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .copy-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .copy-btn.copied {
+            background: #6366f1;
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            box-shadow: 0 2px 4px rgba(22, 101, 52, 0.1);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 30px;
+            color: #64748b;
+            font-size: 16px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 14px;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .no-data-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 30px;
+            color: #6366f1;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .spinner {
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #6366f1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box button {
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1><span>📦</span> Transfer Data Viewer</h1>
+        <p class="subtitle">Search and view transfer records by client ID</p>
+    </div>
+
+    <div class="search-section">
+        <label class="search-label">Client Identification</label>
+        <div class="search-box">
+            <input type="text" id="clientId" placeholder="Enter TO Client ID (e.g. JUYL25XQJY2WS)">
+            <button onclick="fetchData()">🔍 Search Records</button>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="dataTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>From Corporate</th>
+                    <th>From Client</th>
+                    <th>To Corporate</th>
+                    <th>To Client</th>
+                    <th>Type</th>
+                    <th>Data 1</th>
+                    <th>Data 2</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="loading" id="loading" style="display:none;">
+        <div class="spinner"></div>
+        <p>Loading transfer data...</p>
+    </div>
+
+    <div class="no-data" id="noData" style="display:none;">
+        <div class="no-data-icon">📭</div>
+        <strong>No data found</strong><br>
+        <span style="color: #94a3b8; font-size: 14px;">No transfer records exist for this Client ID</span>
+    </div>
+</div>
+
+<script>
+    function fetchData() {
+        const clientId = document.getElementById("clientId").value.trim();
+        const table = document.getElementById("dataTable");
+        const tbody = document.getElementById("tableBody");
+        const noData = document.getElementById("noData");
+        const loading = document.getElementById("loading");
+
+        tbody.innerHTML = "";
+        table.style.display = "none";
+        noData.style.display = "none";
+        loading.style.display = "none";
+
+        if (!clientId) {
+            alert("⚠️ Please enter a Client ID");
+            return;
+        }
+
+        loading.style.display = "block";
+
+        fetch(`/api/transfer/?client_id=${clientId}`)
+            .then(res => res.json())
+            .then(data => {
+                loading.style.display = "none";
+
+                if (!data.success || data.data.length === 0) {
+                    noData.style.display = "block";
+                    return;
+                }
+
+                data.data.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    
+                    const cells = [
+                        { value: index + 1, type: 'text' },
+                        { value: item.from_corporate_id, type: 'text' },
+                        { value: item.from_client_id, type: 'text' },
+                        { value: item.to_corporate_id, type: 'text' },
+                        { value: item.to_client_id, type: 'strong' },
+                        { value: item.type, type: 'text' },
+                        { value: item.data_1, type: 'file', label: 'Data 1' },
+                        { value: item.data_2, type: 'file', label: 'Data 2' },
+                        { value: item.date_of_upload, type: 'text' },
+                        { value: item.time_of_upload, type: 'text' },
+                        { value: item.status, type: 'badge' }
+                    ];
+
+                    cells.forEach((cell) => {
+                        const td = document.createElement('td');
+                        
+                        if (cell.type === 'strong') {
+                            const strong = document.createElement('strong');
+                            strong.textContent = cell.value;
+                            td.appendChild(strong);
+                        } else if (cell.type === 'file') {
+                            if (cell.value) {
+                                const fileCell = document.createElement('div');
+                                fileCell.className = 'file-cell';
+                                
+                                const link = document.createElement('a');
+                                link.className = 'file-link';
+                                link.href = cell.value;
+                                link.target = '_blank';
+                                link.textContent = cell.value;
+                                link.title = cell.value;
+                                
+                                const copyBtn = document.createElement('button');
+                                copyBtn.className = 'copy-btn';
+                                copyBtn.textContent = '📋 Copy';
+                                copyBtn.onclick = (e) => {
+                                    e.stopPropagation();
+                                    copyToClipboard(cell.value, copyBtn);
+                                };
+                                
+                                fileCell.appendChild(link);
+                                fileCell.appendChild(copyBtn);
+                                td.appendChild(fileCell);
+                            } else {
+                                td.textContent = 'N/A';
+                            }
+                        } else if (cell.type === 'badge') {
+                            const span = document.createElement('span');
+                            span.className = 'badge';
+                            span.textContent = cell.value;
+                            td.appendChild(span);
+                        } else {
+                            td.textContent = cell.value;
+                        }
+                        
+                        row.appendChild(td);
+                    });
+
+                    tbody.appendChild(row);
+                });
+
+                table.style.display = "table";
+            })
+            .catch(() => {
+                loading.style.display = "none";
+                alert("❌ Server error - Unable to fetch data");
+            });
+    }
+
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = button.textContent;
+            button.textContent = '✓ Copied!';
+            button.classList.add('copied');
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('copied');
+            }, 2000);
+        }).catch(() => {
+            alert('Failed to copy to clipboard');
+        });
+    }
+
+    // Allow Enter key to trigger search
+    document.getElementById("clientId").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            fetchData();
+        }
+    });
+</script>
+
+</body>
+</html>

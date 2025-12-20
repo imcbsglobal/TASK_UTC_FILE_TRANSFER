@@ -3,4 +3,6 @@ from . import views
 
 urlpatterns = [
     path('transfer/', views.transfer_api, name='transfer_api'),
+
+    path("", views.transfer_page, name="transfer_view"),
 ]
