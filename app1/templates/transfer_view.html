@@ -362,6 +362,8 @@
                                 <th>From Client</th>
                                 <th>To Client</th>
                                 <th>Type</th>
+                                <th>Uploaded Date</th>
+                                <th>Uploaded Time</th>
                                 <th>Data 1</th>
                                 <th>Data 2</th>
                                 <th>Status</th>
@@ -430,6 +432,8 @@
                     <td>${item.from_client_id}</td>
                     <td class="client-id">${item.to_client_id}</td>
                     <td>${item.type}</td>
+                    <td>${item.date_of_upload || "-"}</td>
+                    <td>${item.time_of_upload || "-"}</td>
                     <td>
                         ${item.data_1
                                 ? `<div style="display: flex; gap: 8px; align-items: center;">
