@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
@@ -77,15 +77,14 @@ WSGI_APPLICATION = 'TASK_UTC.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'TASKUTC',  # Your DB name
-        'USER': 'postgres',           # Your DB username
-        'PASSWORD': 'sajith@2003',   # Your DB password
-        'HOST': 'localhost',          # Or server IP if remote
-        'PORT': '5432',               # Default PostgreSQL port
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
-
 
 
 # Password validation
@@ -124,7 +123,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-import os
+
 # Cloudflare R2 Storage Configuration
 CLOUDFLARE_R2_ENABLED = os.getenv('CLOUDFLARE_R2_ENABLED', 'false').lower() == 'true'
 
