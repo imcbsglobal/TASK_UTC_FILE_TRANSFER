@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from .models import TransferData
 import requests
+from django.utils.timezone import localtime
 
 CORPORATE_API_URL = "https://activate.imcbs.com/corporate-clientid/list/"
 
@@ -25,6 +26,15 @@ def is_valid_corporate_client(corporate_id, client_id):
     except Exception:
         return False
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.utils.timezone import localtime
+from .models import TransferData
+import requests
+
+CORPORATE_API_URL = "https://activate.imcbs.com/corporate-clientid/list/"
+
 
 @csrf_exempt
 def transfer_api(request):
@@ -44,27 +54,31 @@ def transfer_api(request):
         response_data = []
 
         for item in records:
+            # ✅ Convert UTC → Asia/Kolkata
+            local_dt = localtime(item.created_at)
+
             response_data.append({
-                "id": item.id,                              # ✅ ID
+                "id": item.id,
                 "from_corporate_id": item.from_corporate_id,
                 "from_client_id": item.from_client_id,
                 "to_corporate_id": item.to_corporate_id,
                 "to_client_id": item.to_client_id,
                 "type": item.transfer_type,
 
-                # ✅ USERS
+                # USERS
                 "uploaded_user": item.user,
                 "completed_user": item.completed_user,
 
-                # ✅ STATUS FROM DB (NOT HARD CODED)
+                # STATUS
                 "status": item.status,
 
-                # ✅ FILES
+                # FILES
                 "data_1": item.data_1,
                 "data_2": item.data_2,
 
-                "date_of_upload": item.created_at.strftime("%Y-%m-%d"),
-                "time_of_upload": item.created_at.strftime("%H:%M:%S"),
+                # ✅ IST DATE & TIME
+                "date_of_upload": local_dt.strftime("%Y-%m-%d"),
+                "time_of_upload": local_dt.strftime("%I:%M %p"),
             })
 
         return JsonResponse({
@@ -82,12 +96,12 @@ def transfer_api(request):
             to_corporate_id = request.POST.get('to_corporate_id')
             to_client_id = request.POST.get('to_client_id')
             transfer_type = request.POST.get('type')
-            user = request.POST.get('user')  # ✅ NEW FIELD
+            user = request.POST.get('user')
 
             file1 = request.FILES.get('data_1')
             file2 = request.FILES.get('data_2')
 
-            # ---- REQUIRED FIELDS ----
+            # REQUIRED FIELDS
             if not all([
                 from_corporate_id,
                 from_client_id,
@@ -101,34 +115,21 @@ def transfer_api(request):
                     "message": "Missing required fields"
                 }, status=400)
 
-            # ---- SAME CORPORATE ONLY ----
+            # SAME CORPORATE ONLY
             if from_corporate_id != to_corporate_id:
                 return JsonResponse({
                     "success": False,
                     "message": "From and To corporate_id must be the same"
                 }, status=400)
 
-            # ---- SAME CLIENT NOT ALLOWED ----
+            # SAME CLIENT NOT ALLOWED
             if from_client_id == to_client_id:
                 return JsonResponse({
                     "success": False,
                     "message": "From and To client_id cannot be the same"
                 }, status=400)
 
-            # ---- VALIDATE CORPORATE & CLIENT ----
-            if not is_valid_corporate_client(from_corporate_id, from_client_id):
-                return JsonResponse({
-                    "success": False,
-                    "message": "from_client_id does not belong to this corporate"
-                }, status=400)
-
-            if not is_valid_corporate_client(to_corporate_id, to_client_id):
-                return JsonResponse({
-                    "success": False,
-                    "message": "to_client_id does not belong to this corporate"
-                }, status=400)
-
-            # ================= SAVE FILES =================
+            # SAVE FILES
             file1_url = None
             file2_url = None
 
@@ -140,14 +141,14 @@ def transfer_api(request):
                 path2 = default_storage.save(f"uploads/{file2.name}", file2)
                 file2_url = default_storage.url(path2)
 
-            # ================= SAVE DATA =================
+            # SAVE DATA
             transfer = TransferData.objects.create(
                 from_corporate_id=from_corporate_id,
                 from_client_id=from_client_id,
                 to_corporate_id=to_corporate_id,
                 to_client_id=to_client_id,
                 transfer_type=transfer_type,
-                user=user,  # ✅ USER SAVED
+                user=user,
                 data_1=file1_url,
                 data_2=file2_url
             )
@@ -168,6 +169,7 @@ def transfer_api(request):
         "success": False,
         "message": "Method not allowed"
     }, status=405)
+
 
 
 def transfer_page(request):

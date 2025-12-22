@@ -53,6 +53,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+TIME_ZONE = 'Asia/Kolkata'
+
+USE_TZ = True
+
 ROOT_URLCONF = 'TASK_UTC.urls'
 
 TEMPLATES = [
