@@ -7,310 +7,266 @@
 
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 40px 20px;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3), transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.3), transparent 50%);
-            pointer-events: none;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(255, 255, 255, 0.1);
-            position: relative;
-            z-index: 1;
-        }
-
-        .header {
-            margin-bottom: 35px;
-            padding-bottom: 25px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        h1 {
-            color: #1e293b;
-            font-size: 32px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-        h1 span {
-            font-size: 36px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }
-
-        .subtitle {
-            color: #64748b;
-            font-size: 15px;
-            margin-left: 48px;
-        }
-
-        .search-section {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            padding: 30px;
-            border-radius: 16px;
-            margin-bottom: 30px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .search-label {
-            display: block;
-            color: #475569;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 15px;
-            align-items: stretch;
-        }
-
-        .search-box input {
-            flex: 1;
-            padding: 16px 20px;
-            font-size: 15px;
-            border-radius: 12px;
-            border: 2px solid #cbd5e1;
-            outline: none;
-            transition: all 0.3s ease;
             background: white;
-            font-family: 'Courier New', monospace;
-        }
-
-        .search-box input:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .search-box input::placeholder {
-            color: #94a3b8;
-        }
-
-        .search-box button {
-            padding: 16px 40px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            color: white;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-            position: relative;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
-        .search-box button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 30px 40px;
+            color: white;
         }
 
-        .search-box button:active {
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header p {
+            margin-top: 8px;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .search-section {
+            padding: 30px 40px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 12px;
+            max-width: 600px;
+        }
+
+        .input-group {
+            flex: 1;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active {
             transform: translateY(0);
         }
 
+        .content-section {
+            padding: 40px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-state svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
         .table-wrapper {
-            width: 100%;
             overflow-x: auto;
-            border-radius: 14px;
+            border-radius: 12px;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            background: white;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 1100px;
+            background: white;
         }
 
-        thead {
+        th {
             background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-        }
-
-        thead th {
-            position: sticky;
-            top: 0;
-            color: #ffffff;
-            padding: 16px 14px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-weight: 700;
-            white-space: nowrap;
-            border-bottom: 3px solid #6366f1;
-        }
-
-        tbody td {
-            padding: 16px 14px;
-            font-size: 14px;
-            border-bottom: 1px solid #f1f5f9;
-            white-space: nowrap;
-            color: #334155;
-            transition: all 0.2s ease;
-        }
-
-        tbody tr {
-            transition: all 0.2s ease;
-        }
-
-        tbody tr:hover {
-            background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%);
-            transform: scale(1.01);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        tbody td:first-child {
-            font-weight: 700;
-            color: #64748b;
-        }
-
-        tbody td strong {
-            color: #6366f1;
-            font-weight: 700;
-            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-            padding: 4px 10px;
-            border-radius: 6px;
-            display: inline-block;
-        }
-
-        .file-cell {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .file-link {
-            color: #2563eb;
-            font-weight: 500;
-            text-decoration: none;
-            padding: 6px 10px;
-            background: #dbeafe;
-            border-radius: 8px;
-            display: inline-block;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            color: white;
+            padding: 16px;
+            text-align: left;
             font-size: 13px;
-            max-width: 350px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex: 1;
-        }
-
-        .file-link:hover {
-            background: #2563eb;
-            color: white;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-        }
-
-        .copy-btn {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             white-space: nowrap;
         }
 
-        .copy-btn:hover {
-            background: #059669;
-            transform: scale(1.05);
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            color: #475569;
         }
 
-        .copy-btn:active {
-            transform: scale(0.95);
+        tr:hover {
+            background: #f8fafc;
         }
 
-        .copy-btn.copied {
-            background: #6366f1;
+        tr:last-child td {
+            border-bottom: none;
         }
 
         .badge {
+            display: inline-block;
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-            color: #166534;
-            display: inline-block;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
-            box-shadow: 0 2px 4px rgba(22, 101, 52, 0.1);
+            letter-spacing: 0.3px;
         }
 
-        .no-data {
-            text-align: center;
-            padding: 60px 30px;
-            color: #64748b;
-            font-size: 16px;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border-radius: 14px;
-            border: 2px dashed #cbd5e1;
+        .uploaded {
+            background: #fef3c7;
+            color: #92400e;
         }
 
-        .no-data-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-            opacity: 0.5;
+        .complete {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .file-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .file-link:hover {
+            background: #f0f4ff;
+            color: #5568d3;
+        }
+
+        .row-number {
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        .client-id {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .copy-btn {
+            padding: 6px 8px;
+            background: #e0e7ff;
+            border: 1px solid #c7d2fe;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+        }
+
+        .copy-btn svg {
+            stroke: #6366f1;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #6366f1;
+            border-color: #6366f1;
+            transform: none;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .copy-btn:hover svg {
+            stroke: white;
+        }
+
+        .copy-btn.copied {
+            background: #10b981;
+            border-color: #10b981;
+        }
+
+        .copy-btn.copied svg {
+            stroke: white;
         }
 
         .loading {
             text-align: center;
-            padding: 60px 30px;
-            color: #6366f1;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 40px;
+            color: #64748b;
         }
 
         .spinner {
-            border: 4px solid #e5e7eb;
-            border-top: 4px solid #6366f1;
+            border: 3px solid #f1f5f9;
+            border-top: 3px solid #667eea;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
+            margin: 0 auto 16px;
         }
 
         @keyframes spin {
@@ -318,31 +274,28 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Modal Styles */
-        .modal {
-            display: none;
+        .results-count {
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 25px;
+            .header, .search-section, .content-section {
+                padding: 20px;
             }
 
-            h1 {
-                font-size: 24px;
-            }
-
-            .search-box {
+            .search-wrapper {
                 flex-direction: column;
             }
 
-            .search-box button {
+            button {
                 width: 100%;
-            }
-
-            .modal-content {
-                width: 95%;
-                margin: 5% auto;
             }
         }
     </style>
@@ -351,175 +304,208 @@
 
 <div class="container">
     <div class="header">
-        <h1><span>📦</span> Transfer Data Viewer</h1>
-        <p class="subtitle">Search and view transfer records by client ID</p>
+        <h1>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Transfer Data Viewer
+        </h1>
+        <p>Search and manage client transfer records</p>
     </div>
 
     <div class="search-section">
-        <label class="search-label">Client Identification</label>
-        <div class="search-box">
-            <input type="text" id="clientId" placeholder="Enter TO Client ID (e.g. JUYL25XQJY2WS)">
-            <button onclick="fetchData()">🔍 Search Records</button>
+        <div class="search-wrapper">
+            <div class="input-group">
+                <input type="text" id="clientId" placeholder="Enter Client ID to search transfers...">
+            </div>
+            <button onclick="fetchData()">
+                <span>Search</span>
+            </button>
         </div>
     </div>
 
-    <div class="table-wrapper">
-        <table id="dataTable" style="display:none;">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>From Corporate</th>
-                    <th>From Client</th>
-                    <th>To Corporate</th>
-                    <th>To Client</th>
-                    <th>Type</th>
-                    <th>Data 1</th>
-                    <th>Data 2</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
+    <div class="content-section">
+        <div id="emptyState" class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <h3>No Search Performed</h3>
+            <p>Enter a Client ID above to view transfer records</p>
+        </div>
 
-    <div class="loading" id="loading" style="display:none;">
-        <div class="spinner"></div>
-        <p>Loading transfer data...</p>
-    </div>
+        <div id="loadingState" class="loading" style="display:none;">
+            <div class="spinner"></div>
+            <p>Loading transfer data...</p>
+        </div>
 
-    <div class="no-data" id="noData" style="display:none;">
-        <div class="no-data-icon">📭</div>
-        <strong>No data found</strong><br>
-        <span style="color: #94a3b8; font-size: 14px;">No transfer records exist for this Client ID</span>
+        <div id="resultsSection" style="display:none;">
+            <div id="resultsCount" class="results-count"></div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Uploaded User</th>
+                            <th>From Client</th>
+                            <th>To Client</th>
+                            <th>Type</th>
+                            <th>Data 1</th>
+                            <th>Data 2</th>
+                            <th>Status</th>
+                            <th>Completed By</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    function fetchData() {
-        const clientId = document.getElementById("clientId").value.trim();
-        const table = document.getElementById("dataTable");
-        const tbody = document.getElementById("tableBody");
-        const noData = document.getElementById("noData");
-        const loading = document.getElementById("loading");
+function fetchData() {
+    const clientId = document.getElementById("clientId").value.trim();
+    const emptyState = document.getElementById("emptyState");
+    const loadingState = document.getElementById("loadingState");
+    const resultsSection = document.getElementById("resultsSection");
+    const tbody = document.getElementById("tableBody");
+    const resultsCount = document.getElementById("resultsCount");
 
-        tbody.innerHTML = "";
-        table.style.display = "none";
-        noData.style.display = "none";
-        loading.style.display = "none";
+    if (!clientId) {
+        alert("Please enter a Client ID");
+        return;
+    }
 
-        if (!clientId) {
-            alert("⚠️ Please enter a Client ID");
-            return;
-        }
+    emptyState.style.display = "none";
+    loadingState.style.display = "block";
+    resultsSection.style.display = "none";
+    tbody.innerHTML = "";
 
-        loading.style.display = "block";
+    fetch(`/api/transfer/?client_id=${clientId}`)
+        .then(res => res.json())
+        .then(data => {
+            loadingState.style.display = "none";
 
-        fetch(`/api/transfer/?client_id=${clientId}`)
-            .then(res => res.json())
-            .then(data => {
-                loading.style.display = "none";
+            if (!data.success || data.data.length === 0) {
+                emptyState.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                    <h3>No Results Found</h3>
+                    <p>No transfer records found for Client ID: ${clientId}</p>
+                `;
+                emptyState.style.display = "block";
+                return;
+            }
 
-                if (!data.success || data.data.length === 0) {
-                    noData.style.display = "block";
-                    return;
-                }
+            resultsCount.textContent = `Found ${data.data.length} transfer record${data.data.length > 1 ? 's' : ''} for Client ID: ${clientId}`;
 
-                data.data.forEach((item, index) => {
-                    const row = document.createElement('tr');
-                    
-                    const cells = [
-                        { value: index + 1, type: 'text' },
-                        { value: item.from_corporate_id, type: 'text' },
-                        { value: item.from_client_id, type: 'text' },
-                        { value: item.to_corporate_id, type: 'text' },
-                        { value: item.to_client_id, type: 'strong' },
-                        { value: item.type, type: 'text' },
-                        { value: item.data_1, type: 'file', label: 'Data 1' },
-                        { value: item.data_2, type: 'file', label: 'Data 2' },
-                        { value: item.date_of_upload, type: 'text' },
-                        { value: item.time_of_upload, type: 'text' },
-                        { value: item.status, type: 'badge' }
-                    ];
+            data.data.forEach((item, index) => {
+                const row = document.createElement("tr");
 
-                    cells.forEach((cell) => {
-                        const td = document.createElement('td');
-                        
-                        if (cell.type === 'strong') {
-                            const strong = document.createElement('strong');
-                            strong.textContent = cell.value;
-                            td.appendChild(strong);
-                        } else if (cell.type === 'file') {
-                            if (cell.value) {
-                                const fileCell = document.createElement('div');
-                                fileCell.className = 'file-cell';
-                                
-                                const link = document.createElement('a');
-                                link.className = 'file-link';
-                                link.href = cell.value;
-                                link.target = '_blank';
-                                link.textContent = cell.value;
-                                link.title = cell.value;
-                                
-                                const copyBtn = document.createElement('button');
-                                copyBtn.className = 'copy-btn';
-                                copyBtn.textContent = '📋 Copy';
-                                copyBtn.onclick = (e) => {
-                                    e.stopPropagation();
-                                    copyToClipboard(cell.value, copyBtn);
-                                };
-                                
-                                fileCell.appendChild(link);
-                                fileCell.appendChild(copyBtn);
-                                td.appendChild(fileCell);
-                            } else {
-                                td.textContent = 'N/A';
-                            }
-                        } else if (cell.type === 'badge') {
-                            const span = document.createElement('span');
-                            span.className = 'badge';
-                            span.textContent = cell.value;
-                            td.appendChild(span);
-                        } else {
-                            td.textContent = cell.value;
-                        }
-                        
-                        row.appendChild(td);
-                    });
+                const statusBadge = `
+                    <span class="badge ${item.status === "Complete" ? "complete" : "uploaded"}">
+                        ${item.status}
+                    </span>
+                `;
 
-                    tbody.appendChild(row);
-                });
+                row.innerHTML = `
+                    <td class="row-number">${index + 1}</td>
+                    <td>${item.uploaded_user || "-"}</td>
+                    <td>${item.from_client_id}</td>
+                    <td class="client-id">${item.to_client_id}</td>
+                    <td>${item.type}</td>
+                    <td>
+                        ${item.data_1
+                            ? `<div style="display: flex; gap: 8px; align-items: center;">
+                                <a class="file-link" href="${item.data_1}" target="_blank">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                    </svg>
+                                    View
+                                </a>
+                                <button class="copy-btn" onclick="copyToClipboard('${item.data_1.replace(/'/g, "\\'")}', this)" title="Copy URL">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                               </div>`
+                            : "<span style='color:#94a3b8;'>N/A</span>"}
+                    </td>
+                    <td>
+                        ${item.data_2
+                            ? `<div style="display: flex; gap: 8px; align-items: center;">
+                                <a class="file-link" href="${item.data_2}" target="_blank">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                    </svg>
+                                    View
+                                </a>
+                                <button class="copy-btn" onclick="copyToClipboard('${item.data_2.replace(/'/g, "\\'")}', this)" title="Copy URL">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </button>
+                               </div>`
+                            : "<span style='color:#94a3b8;'>N/A</span>"}
+                    </td>
+                    <td>${statusBadge}</td>
+                    <td>${item.status === "Complete" ? (item.completed_user || "-") : "-"}</td>
+                `;
 
-                table.style.display = "table";
-            })
-            .catch(() => {
-                loading.style.display = "none";
-                alert("❌ Server error - Unable to fetch data");
+                tbody.appendChild(row);
             });
-    }
 
-    function copyToClipboard(text, button) {
-        navigator.clipboard.writeText(text).then(() => {
-            const originalText = button.textContent;
-            button.textContent = '✓ Copied!';
-            button.classList.add('copied');
-            
-            setTimeout(() => {
-                button.textContent = originalText;
-                button.classList.remove('copied');
-            }, 2000);
-        }).catch(() => {
-            alert('Failed to copy to clipboard');
+            resultsSection.style.display = "block";
+        })
+        .catch(() => {
+            loadingState.style.display = "none";
+            emptyState.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <h3>Server Error</h3>
+                <p>Unable to fetch transfer data. Please try again.</p>
+            `;
+            emptyState.style.display = "block";
         });
-    }
+}
 
-    // Allow Enter key to trigger search
-    document.getElementById("clientId").addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-            fetchData();
-        }
+document.getElementById("clientId").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        fetchData();
+    }
+});
+
+function copyToClipboard(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        const originalHTML = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        `;
+        
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = originalHTML;
+        }, 2000);
+    }).catch(err => {
+        alert('Failed to copy URL');
     });
+}
 </script>
 
 </body>

@@ -4,7 +4,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from .models import TransferData
 import requests
-from django.db.models import Q
 
 CORPORATE_API_URL = "https://activate.imcbs.com/corporate-clientid/list/"
 
@@ -36,7 +35,6 @@ def transfer_api(request):
         client_id = request.GET.get("client_id")
 
         if client_id:
-            # ✅ ONLY TO CLIENT DATA
             records = TransferData.objects.filter(
                 to_client_id=client_id
             ).order_by('-created_at')
@@ -47,16 +45,26 @@ def transfer_api(request):
 
         for item in records:
             response_data.append({
+                "id": item.id,                              # ✅ ID
                 "from_corporate_id": item.from_corporate_id,
                 "from_client_id": item.from_client_id,
                 "to_corporate_id": item.to_corporate_id,
                 "to_client_id": item.to_client_id,
                 "type": item.transfer_type,
+
+                # ✅ USERS
+                "uploaded_user": item.user,
+                "completed_user": item.completed_user,
+
+                # ✅ STATUS FROM DB (NOT HARD CODED)
+                "status": item.status,
+
+                # ✅ FILES
                 "data_1": item.data_1,
                 "data_2": item.data_2,
+
                 "date_of_upload": item.created_at.strftime("%Y-%m-%d"),
                 "time_of_upload": item.created_at.strftime("%H:%M:%S"),
-                "status": "uploaded"
             })
 
         return JsonResponse({
@@ -64,7 +72,6 @@ def transfer_api(request):
             "count": len(response_data),
             "data": response_data
         })
-
 
 
     # ===================== POST API =====================
@@ -75,6 +82,7 @@ def transfer_api(request):
             to_corporate_id = request.POST.get('to_corporate_id')
             to_client_id = request.POST.get('to_client_id')
             transfer_type = request.POST.get('type')
+            user = request.POST.get('user')  # ✅ NEW FIELD
 
             file1 = request.FILES.get('data_1')
             file2 = request.FILES.get('data_2')
@@ -85,7 +93,8 @@ def transfer_api(request):
                 from_client_id,
                 to_corporate_id,
                 to_client_id,
-                transfer_type
+                transfer_type,
+                user
             ]):
                 return JsonResponse({
                     "success": False,
@@ -119,9 +128,7 @@ def transfer_api(request):
                     "message": "to_client_id does not belong to this corporate"
                 }, status=400)
 
-            # =================================================
-            # ✅ SAVE FILES TO CLOUDFLARE R2
-            # =================================================
+            # ================= SAVE FILES =================
             file1_url = None
             file2_url = None
 
@@ -133,15 +140,14 @@ def transfer_api(request):
                 path2 = default_storage.save(f"uploads/{file2.name}", file2)
                 file2_url = default_storage.url(path2)
 
-            # =================================================
-            # ✅ SAVE NEW ROW (NO DELETE)
-            # =================================================
+            # ================= SAVE DATA =================
             transfer = TransferData.objects.create(
                 from_corporate_id=from_corporate_id,
                 from_client_id=from_client_id,
                 to_corporate_id=to_corporate_id,
                 to_client_id=to_client_id,
                 transfer_type=transfer_type,
+                user=user,  # ✅ USER SAVED
                 data_1=file1_url,
                 data_2=file2_url
             )
@@ -166,3 +172,81 @@ def transfer_api(request):
 
 def transfer_page(request):
     return render(request, "transfer_view.html")
+
+
+
+
+
+
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import TransferData
+
+ALLOWED_STATUSES = ["Uploaded", "Complete"]
+
+
+@csrf_exempt
+def transfer_status_update_api(request):
+
+    if request.method != "POST":
+        return JsonResponse(
+            {"success": False, "message": "Method not allowed"},
+            status=405
+        )
+
+    try:
+        body = json.loads(request.body.decode("utf-8"))
+
+        transfer_id = body.get("id")
+        status = body.get("status")
+        completed_user = body.get("user")
+
+        if not transfer_id or not status or not completed_user:
+            return JsonResponse({
+                "success": False,
+                "message": "id, status and user are required"
+            }, status=400)
+
+        # ✅ STATUS VALIDATION
+        if status not in ALLOWED_STATUSES:
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid status. Allowed values: Uploaded, Complete"
+            }, status=400)
+
+        transfer = TransferData.objects.get(id=transfer_id)
+
+        transfer.status = status
+
+        # ✅ Only set completed_user when status is Complete
+        if status == "Complete":
+            transfer.completed_user = completed_user
+        else:
+            transfer.completed_user = None
+
+        transfer.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": f"Status updated to {status}"
+        })
+
+    except TransferData.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "Transfer not found"
+        }, status=404)
+
+    except json.JSONDecodeError:
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid JSON body"
+        }, status=400)
+
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "message": str(e)
+        }, status=500)
