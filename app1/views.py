@@ -26,15 +26,6 @@ def is_valid_corporate_client(corporate_id, client_id):
     except Exception:
         return False
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.core.files.storage import default_storage
-from django.utils.timezone import localtime
-from .models import TransferData
-import requests
-
-CORPORATE_API_URL = "https://activate.imcbs.com/corporate-clientid/list/"
-
 
 @csrf_exempt
 def transfer_api(request):
@@ -45,11 +36,16 @@ def transfer_api(request):
         client_id = request.GET.get("client_id")
 
         if client_id:
+            # ✅ Filter by client_id AND status="Uploaded" ONLY
             records = TransferData.objects.filter(
-                to_client_id=client_id
+                to_client_id=client_id,
+                status="Uploaded"
             ).order_by('-created_at')
         else:
-            records = TransferData.objects.all().order_by('-created_at')
+            # ✅ If no client_id provided, show only Uploaded status
+            records = TransferData.objects.filter(
+                status="Uploaded"
+            ).order_by('-created_at')
 
         response_data = []
 
@@ -171,14 +167,59 @@ def transfer_api(request):
     }, status=405)
 
 
-
 def transfer_page(request):
     return render(request, "transfer_view.html")
 
 
+# ✅ NEW API FOR THE PAGE - SHOWS ALL STATUSES
+@csrf_exempt
+def transfer_page_api(request):
+    """
+    This API is used by transfer_view.html to show ALL statuses
+    """
+    if request.method == 'GET':
+        client_id = request.GET.get("client_id")
 
+        if client_id:
+            # Show ALL statuses for this client
+            records = TransferData.objects.filter(
+                to_client_id=client_id
+            ).order_by('-created_at')
+        else:
+            # Show ALL records with ALL statuses
+            records = TransferData.objects.all().order_by('-created_at')
 
+        response_data = []
 
+        for item in records:
+            local_dt = localtime(item.created_at)
+
+            response_data.append({
+                "id": item.id,
+                "from_corporate_id": item.from_corporate_id,
+                "from_client_id": item.from_client_id,
+                "to_corporate_id": item.to_corporate_id,
+                "to_client_id": item.to_client_id,
+                "type": item.transfer_type,
+                "uploaded_user": item.user,
+                "completed_user": item.completed_user,
+                "status": item.status,
+                "data_1": item.data_1,
+                "data_2": item.data_2,
+                "date_of_upload": local_dt.strftime("%Y-%m-%d"),
+                "time_of_upload": local_dt.strftime("%I:%M %p"),
+            })
+
+        return JsonResponse({
+            "success": True,
+            "count": len(response_data),
+            "data": response_data
+        })
+
+    return JsonResponse({
+        "success": False,
+        "message": "Method not allowed"
+    }, status=405)
 
 
 import json
@@ -252,9 +293,3 @@ def transfer_status_update_api(request):
             "success": False,
             "message": str(e)
         }, status=500)
-
-
-
-
-
-# j

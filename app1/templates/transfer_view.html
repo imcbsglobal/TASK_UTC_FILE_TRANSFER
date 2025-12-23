@@ -397,7 +397,8 @@
             resultsSection.style.display = "none";
             tbody.innerHTML = "";
 
-            fetch(`/api/transfer/?client_id=${clientId}`)
+            // ✅ CHANGED: Use new API endpoint that shows ALL statuses
+            fetch(`/api/transfer-page-api/?client_id=${clientId}`)
                 .then(res => res.json())
                 .then(data => {
                     loadingState.style.display = "none";
