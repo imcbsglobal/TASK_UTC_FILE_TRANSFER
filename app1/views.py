@@ -87,17 +87,21 @@ def transfer_api(request):
     # ===================== POST API =====================
     elif request.method == 'POST':
         try:
-            from_corporate_id = request.POST.get('from_corporate_id')
-            from_client_id = request.POST.get('from_client_id')
-            to_corporate_id = request.POST.get('to_corporate_id')
-            to_client_id = request.POST.get('to_client_id')
-            transfer_type = request.POST.get('type')
-            user = request.POST.get('user')
+            import json
+            body = json.loads(request.body.decode("utf-8"))
 
-            file1 = request.FILES.get('data_1')
-            file2 = request.FILES.get('data_2')
+            from_corporate_id = body.get('from_corporate_id')
+            from_client_id = body.get('from_client_id')
+            to_corporate_id = body.get('to_corporate_id')
+            to_client_id = body.get('to_client_id')
+            transfer_type = body.get('type')
+            user = body.get('user')
 
-            # REQUIRED FIELDS
+            # ✅ NOW NORMAL DATA (STRING)
+            data_1 = body.get('data_1')
+            data_2 = body.get('data_2')
+
+            # REQUIRED FIELDS (UNCHANGED)
             if not all([
                 from_corporate_id,
                 from_client_id,
@@ -125,19 +129,7 @@ def transfer_api(request):
                     "message": "From and To client_id cannot be the same"
                 }, status=400)
 
-            # SAVE FILES
-            file1_url = None
-            file2_url = None
-
-            if file1:
-                path1 = default_storage.save(f"uploads/{file1.name}", file1)
-                file1_url = default_storage.url(path1)
-
-            if file2:
-                path2 = default_storage.save(f"uploads/{file2.name}", file2)
-                file2_url = default_storage.url(path2)
-
-            # SAVE DATA
+            # SAVE DATA (NO FILE HANDLING)
             transfer = TransferData.objects.create(
                 from_corporate_id=from_corporate_id,
                 from_client_id=from_client_id,
@@ -145,8 +137,8 @@ def transfer_api(request):
                 to_client_id=to_client_id,
                 transfer_type=transfer_type,
                 user=user,
-                data_1=file1_url,
-                data_2=file2_url
+                data_1=data_1,
+                data_2=data_2
             )
 
             return JsonResponse({
@@ -155,16 +147,24 @@ def transfer_api(request):
                 "id": transfer.id
             })
 
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid JSON body"
+            }, status=400)
+
         except Exception as e:
             return JsonResponse({
                 "success": False,
                 "message": str(e)
             }, status=500)
-
     return JsonResponse({
         "success": False,
         "message": "Method not allowed"
     }, status=405)
+
+
+        
 
 
 def transfer_page(request):
