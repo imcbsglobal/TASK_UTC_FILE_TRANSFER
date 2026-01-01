@@ -20,8 +20,8 @@ class TransferData(models.Model):
         max_length=20, default="Uploaded"                # Uploaded / Complete
     )
 
-    data_1 = models.CharField(max_length=255, null=True, blank=True)
-    data_2 = models.CharField(max_length=255, null=True, blank=True)
+    data_1 = models.TextField(null=True, blank=True)
+    data_2 = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
