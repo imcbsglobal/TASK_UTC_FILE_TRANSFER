@@ -35,22 +35,22 @@ def transfer_api(request):
 
         client_id = request.GET.get("client_id")
 
-        if client_id:
-            # ✅ Filter by client_id AND status="Uploaded" ONLY
-            records = TransferData.objects.filter(
-                to_client_id=client_id,
-                status="Uploaded"
-            ).order_by('-created_at')
-        else:
-            # ✅ If no client_id provided, show only Uploaded status
-            records = TransferData.objects.filter(
-                status="Uploaded"
-            ).order_by('-created_at')
+        # ❌ client_id is mandatory
+        if not client_id:
+            return JsonResponse({
+                "success": False,
+                "message": "client_id is required"
+            }, status=400)
+
+        # ✅ Filter ONLY when client_id is present
+        records = TransferData.objects.filter(
+            to_client_id=client_id,
+            status="Uploaded"
+        ).order_by('-created_at')
 
         response_data = []
 
         for item in records:
-            # ✅ Convert UTC → Asia/Kolkata
             local_dt = localtime(item.created_at)
 
             response_data.append({
@@ -61,18 +61,13 @@ def transfer_api(request):
                 "to_client_id": item.to_client_id,
                 "type": item.transfer_type,
 
-                # USERS
                 "uploaded_user": item.user,
                 "completed_user": item.completed_user,
-
-                # STATUS
                 "status": item.status,
 
-                # FILES
                 "data_1": item.data_1,
                 "data_2": item.data_2,
 
-                # ✅ IST DATE & TIME
                 "date_of_upload": local_dt.strftime("%Y-%m-%d"),
                 "time_of_upload": local_dt.strftime("%I:%M %p"),
             })
